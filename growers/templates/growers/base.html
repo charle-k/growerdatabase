@@ -1,0 +1,97 @@
+{% load static %}
+{% load bootstrap3 %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{% static 'growers/favicon.ico' %}">
+
+    <title>{% block title %}Growers Database{% endblock %} - Growers Database</title>
+
+    <link rel="stylesheet" href="{% static 'growers/css/bootstrap.min.css' %}">
+    <link href="{% static 'growers/css/dashboard.css' %}" rel="stylesheet">
+</head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'index' %}">Auction Admin</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'index' %}">
+              Dashboard - {{ user.username }}</a></li>
+             <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
+           <li><a href="{% url 'logout' %}">Logout</a></li>
+           {% else %}
+               <li><a href="{% url 'login' %}">Login</a></li>
+           {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-3 sidebar">
+
+        {% block left_sidebar %}{% endblock %}
+
+
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="{% url 'index' %}">Dashboard <span class="sr-only">(current)</span></a></li>
+            <li><a href="{% url 'upload-records' %}">Upload Records</a></li>
+            <li><a href="">Auctions</a></li>
+            <li><a href="{% url 'provinces-admin' %}">Admin - Provinces & Districts</a></li>
+          </ul>
+
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main">
+
+        {% if messages %}
+          <div class="row">
+          <div class="col-sm-12">
+          {% for message in messages %}
+                <div class="alert
+                  {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success
+                  {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}alert-info
+                  {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger
+                  {% elif message.level == DEFAULT_MESSAGE_LEVELS.DANGER %}alert-danger
+                  {% else %}alert-warning
+                  {% endif %}
+                   ">
+                {{ message }}
+
+                </div>
+         {% endfor %}
+          </div>
+          </div>
+        {% endif %}
+
+        <div class="row">
+        <div class="col-sm-12">
+
+                {% block content %}{% endblock %}
+        </div>
+        </div>
+
+        </div>
+
+    <script src="{% static 'growers/js/jquery.min.js' %}"></script>
+    <script src="{% static 'growers/js/bootstrap.min.js' %}"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{% extends "growers/base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}Edit District - {{ district.name }} {% endblock %}
+
+
+{% block content %}
+<h1 class="page-header">Edit District - {{ district.name }}</h1>
+
+
+
+<form action="{% url 'district-edit' district.id %}" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+</form>
+
+
+
+{% endblock %}

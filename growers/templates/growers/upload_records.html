@@ -1,0 +1,42 @@
+{% extends "growers/base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}
+Upload Records
+{% endblock %}
+
+
+{% block content %}
+<h1 class="page-header">Upload Records</h1>
+
+<div class="panel panel-primary">
+<div class="panel-body">
+<form action="{% url 'upload-records' %}" method="post" class="form" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+    <button type="submit" class="btn btn-primary">
+      Upload File</button>
+</form>
+</div>
+</div>
+
+{% if records %}
+<h2 class="sub-header">Records</h2>
+{% for e in records %}
+<p>
+{{ e }}</p>
+{% endfor %}
+{% endif %}
+
+
+
+{% if errors %}
+<h2 class="sub-header">Errors</h2>
+{% for e in errors %}
+<p>
+{{ e }}</p>
+{% endfor %}
+{% endif %}
+
+
+{% endblock %}

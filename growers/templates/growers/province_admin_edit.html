@@ -1,0 +1,28 @@
+{% extends "growers/base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}Edit Province - {{ province.name }} {% endblock %}
+
+
+{% block content %}
+<h1 class="page-header">Edit Province - {{ province.name }}</h1>
+
+
+<form action="{% url 'province-admin-edit' province.id %}" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+</form>
+
+
+
+
+
+<hr>
+<a class="btn btn-success btn-large" href="{% url 'province-create' %}">
+Go back to provinces</a>
+
+
+{% endblock %}

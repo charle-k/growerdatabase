@@ -1,0 +1,22 @@
+{% extends "growers/base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}Create a District {% endblock %}
+
+
+{% block content %}
+<h1 class="page-header">Create a District</h1>
+
+
+
+<form action="{% url 'district-create' %}" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+
+    <button type="submit" class="btn btn-primary">Create District</button>
+
+</form>
+
+
+
+{% endblock %}
