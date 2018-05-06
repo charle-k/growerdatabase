@@ -1,4 +1,11 @@
-from .models import Grower, District, Province
+from urllib.request import urlopen
+from urllib.parse import quote
+import json
+
+from django.conf import settings
+
+
+from .models import Grower, District, IdGenerator, SmsQueue
 
 
 def check_record_size(f):
@@ -90,7 +97,6 @@ def check_id_number(n):
 
     else:
         is_clean = False
-    print(is_clean)
     return is_clean, n
 
 
@@ -134,7 +140,6 @@ def check_duplicate_id_numbers(records, errors):
     # errors = []
     ids = {}
     for rec in records:
-        print(ids)
         if rec[2] in list(ids.keys()):
             err = 'Duplicate ID Number in with line' + str(ids[rec[2]])
             errors.append([rec[0], err])
@@ -142,3 +147,81 @@ def check_duplicate_id_numbers(records, errors):
             ids[rec[2]] = rec[0]
             cleaned_records.append(rec)
     return cleaned_records, errors
+
+
+def check_grower_existence(records, errors):
+    cleaned_records = []
+
+    for rec in records:
+        if Grower.objects.filter(National_ID=rec[2]).exists():
+            err = 'ID Number for ' + rec[1] + ' is already in the database'
+            errors.append([rec[0], err])
+        else:
+            cleaned_records.append(rec)
+
+    return records, errors
+
+
+def create_records(records, errors, districts):
+    count = 0
+    for rec in records:
+        idgen = IdGenerator(id_number=rec[2])
+        grower = Grower(Grower_Name=rec[1],
+                        National_ID=rec[2],
+                        Mobile_Number=rec[3]
+                        )
+
+        grower.Grower_Number = idgen.get_id()
+        dkey = rec[4] + rec[5]
+        grower.District = districts[dkey]
+        try:
+            #grower.save()
+            count += 1
+            create_sms(grower.Mobile_Number, grower.Grower_Name,
+                      grower.Grower_Number)
+        except:
+            err = "Unable to create " + rec[1] + "'s record"
+            errors.append([rec[0], err])
+    return errors, count
+
+
+def create_sms(cellphone, grower_name, grower_number):
+    msg = 'Hie ' + grower_name
+    msg += "\nYour Grower Account has been created. Your Grower"
+    msg += " Number is " + grower_number
+    sms = SmsQueue(cellphone=cellphone, message=msg)
+    sms.save()
+
+
+def get_sms_balance():
+    ws_str = settings.BULKSMSWEB_URL + "&u=" + settings.BULKSMSWEB_USERNAME
+    ws_str += "&h=" + settings.BULKSMSWEB_TOKEN + "&op=cr"
+    http_response = urlopen(ws_str, timeout=30).read()
+    data = json.loads(http_response.decode())
+    try:
+        bal = int(data['credit'])
+    except:
+        bal = 0
+    try:
+        error = int(data['error'])
+    except:
+        error = 0
+    return bal, error, data['error_string']
+
+
+def send_sms(destination, message):
+    # send via BulkSMS HTTP API
+    ws_str = settings.BULKSMSWEB_URL + "&u=" + settings.BULKSMSWEB_USERNAME
+    ws_str += "&h=" + settings.BULKSMSWEB_TOKEN + "&op=pv"
+    ws_str = ws_str + "&to=" + quote(destination) + "&msg=" + quote(message)
+
+    if settings.DEBUG:
+        print(('DEBUG MODE -> ' + ws_str[0:300]))
+        return 4444, ''
+    else:
+        http_response = urlopen(ws_str, timeout=30).read()
+        data = json.loads(http_response.decode())
+        return data['timestamp'], data['error_string']
+
+
+

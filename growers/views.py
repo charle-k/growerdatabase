@@ -25,7 +25,8 @@ from django.contrib import messages
 from .models import Province, District
 from .forms import ProvinceForm, DistrictForm, FileForm
 from .utils import check_record_size, check_data_integrity
-from .utils import check_duplicate_id_numbers
+from .utils import check_duplicate_id_numbers, check_grower_existence
+from .utils import create_records, get_sms_balance
 
 
 @login_required
@@ -108,6 +109,7 @@ def district_edit(request, id):
 def upload_records(request):
     errors = []
     records = []
+    count = 0
     if request.method == "POST":
         form = FileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -116,11 +118,25 @@ def upload_records(request):
             records, errors, districts = check_data_integrity(records, errors)
 
             records, errors = check_duplicate_id_numbers(records, errors)
-            print(records)
-            messages.success(request, 'File has been uploaded')
+
+            records, errors = check_grower_existence(records, errors)
+
+            if len(errors):
+                messages.error(request, 'The uploaded file has errors')
+            else:
+                errors, count = create_records(records, errors, districts)
+                messages.success(request, 'Accounts Created')
+
     else:
         form = FileForm()
     return render(request, 'growers/upload_records.html', {'form': form,
-                        'errors': errors, 'records': records})
+                        'errors': errors, 'count': count})
+
+
+@login_required
+def sms_balance(request):
+    bal, err, err_string = get_sms_balance()
+    return render(request, 'growers/sms_balance.html', {'bal': bal,
+                     'err': err, 'err_string': err_string})
 
 

@@ -123,3 +123,9 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
+
+
+BULKSMSWEB_USERNAME = "vacancymail00"
+BULKSMSWEB_TOKEN = "27a29c9da02682a6f0e92003ae9d72d3"
+BULKSMSWEB_URL = "http://portal.bulksmsweb.com/index.php?app=ws"
+BULKSMSWEB_BATCH_SIZE = 100

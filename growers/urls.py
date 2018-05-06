@@ -14,4 +14,5 @@ urlpatterns = [
     path('district-edit/<int:id>/', views.district_edit,
              name='district-edit'),
     path('upload-records/', views.upload_records, name='upload-records'),
+    path('sms-balance/', views.sms_balance, name='sms-balance'),
 ]

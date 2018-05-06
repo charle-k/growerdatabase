@@ -20,12 +20,11 @@ Upload Records
 </div>
 </div>
 
-{% if records %}
-<h2 class="sub-header">Records</h2>
-{% for e in records %}
-<p>
-{{ e }}</p>
-{% endfor %}
+
+{% if count %}
+<h2 class="sub-header">Records Saved</h2>
+{{ count }} records have been created.
+
 {% endif %}
 
 

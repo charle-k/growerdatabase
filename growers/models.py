@@ -2,6 +2,8 @@ from django.db import models
 
 # Create your models here.
 
+SEQUENCE_START = 12345677
+
 
 class Province(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -30,6 +32,7 @@ class District(models.Model):
             t = self.name.strip().title()
         return t
 
+
 class Grower(models.Model):
     Grower_Number = models.CharField(max_length=8, unique=True)
     Grower_Name = models.CharField(max_length=200)
@@ -42,11 +45,11 @@ class Grower(models.Model):
         ordering = ['Grower_Name']
 
     def __str__(self):
-        return self.name
+        return self.Grower_Name
 
 
 class IdGenerator(models.Model):
-    id_number = models.CharField(max_length=15, unique=True)
+    id_number = models.CharField(max_length=15)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -54,3 +57,17 @@ class IdGenerator(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_id(self):
+        self.save()
+        t = SEQUENCE_START + self.id
+        return str(t)
+
+
+class SmsQueue(models.Model):
+    cellphone = models.CharField(max_length=15)
+    message = models.CharField(max_length=15)
+    is_sent = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['id']
