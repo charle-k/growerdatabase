@@ -1,0 +1,52 @@
+{% extends 'growers/base.html' %}
+{% load bootstrap3 %}
+{% block title %}View District - {{ district.Grower_Name }}{% endblock %}
+
+
+{% block content %}
+
+<h1>{{ district.name }} District</h1>
+<a href="{% url 'province-view' province.id  %}">
+<h3 class="sub-header">{{ province.name }} Province</h3></a>
+
+
+
+<h2 class="sub-header">Growers in {{ province.name }} Province</h2>
+{% if grower_list.object_list %}
+<table class="table table-bordered">
+<tr><th>Name</th><th>Grower Number</th><th>ID Number</th><th>Cellphone</th>
+{% for grower in grower_list %}
+
+<tr><td><a href="{% url 'grower-view' grower.Grower_Number  %}">
+{{ grower.Grower_Name }}</a></td>
+<td>{{ grower.Grower_Number }}</td>
+<td>{{ grower.National_ID }}</td>
+<td>{{ grower.Mobile_Number }}</td>
+
+</tr>	
+		
+{% endfor %}
+
+</table>	
+
+{% else %}
+
+          <p>
+           There are no growers in this province
+          </p>
+
+{% endif %}
+
+{% if grower_list.has_other_pages %}
+<div class="row">
+<div class="col-sm-12 ">
+
+{% bootstrap_pagination grower_list %}
+
+</div>
+</div>
+{% endif %}
+
+
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "growers/base.html" %}
+{% load bootstrap3 %}
+
+{% block title %}{{ province.name }} - Province {% endblock %}
+
+
+{% block content %}
+<h1 class="page-header">{{ province.name }} - Province </h1>
+<a class="btn btn-success btn-large" href="{% url 'province-admin-edit' province.id %}">
+Edit Province</a>
+<a class="btn btn-success btn-large" href="{% url 'district-create' %}">
+Add District</a>
+
+<h2 class="sub-header">Districts</h2>
+{% if districts %}
+<table class="table table-bordered">
+{% for district in districts %}
+<tr><td><a href="{% url 'district-edit' district.id  %}">
+{{ district.name }}</a></td></tr>
+
+{% endfor %}
+
+</table>
+{% else %}
+<p>There are no districts for this province. Please add districts.</p>
+
+
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'growers/base.html' %}
+
+{% block title %}{{ grower.Grower_Name }} - About{% endblock %}
+
+
+{% block content %}
+
+<h1>About {{ grower.Grower_Name }} </h1>
+
+<h3 class="sub-header">Details</h3>
+
+<table class="table table-bordered">
+
+<tr>
+<th>Full Name</th>
+<td>{{ grower.Grower_Name }}</td>
+</tr>
+
+<tr>
+<th>National ID Number</th>
+<td>{{ grower.National_ID }}</td>
+</tr>
+
+<tr>
+<th>Grower Number</th>
+<td>{{ grower.Grower_Number }}</td>
+</tr>
+
+<tr>
+<th>Cellphone Number</th>
+<td>{{ grower.Mobile_Number }}</td>
+</tr>
+
+<tr>
+<th>District</th>
+<td><a href="{% url 'district-view' district.id  %}">{{ district.name }}</a></td>
+</tr>
+
+<tr>
+<th>Province</th>
+<td><a href="{% url 'province-view' province.id  %}">{{ province.name }}</a></td>
+</tr>
+
+</table>	
+
+
+{% endblock %}

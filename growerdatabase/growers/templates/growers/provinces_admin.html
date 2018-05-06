@@ -1,0 +1,37 @@
+{% extends "growers/base.html" %}
+
+{% block title %}
+Admin - Provinces & Districts
+{% endblock %}
+
+
+{% block content %}
+<h1 class="page-header">Admin - Provinces and Districts</h1>
+
+<p>
+<a class="btn btn-primary btn-large" href="{% url 'province-create' %}">
+Create a Province</a>
+
+<a class="btn btn-primary btn-large" href="{% url 'district-create' %}">
+Create a District</a>
+</p>
+
+<p>
+{% if provinces %}
+<table class="table">
+{% for province in provinces %}
+<tr><td><a href="{% url 'province-admin-view' province.id  %}">
+{{ province.name }}</a></td></tr>
+
+{% endfor %}
+
+</table>
+{% else %}
+There are no provinces. Please add a province.
+
+{% endif %}
+</p>
+
+
+
+{% endblock %}
