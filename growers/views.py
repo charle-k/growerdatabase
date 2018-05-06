@@ -25,6 +25,7 @@ from django.contrib import messages
 from .models import Province, District
 from .forms import ProvinceForm, DistrictForm, FileForm
 from .utils import check_record_size, check_data_integrity
+from .utils import check_duplicate_id_numbers
 
 
 @login_required
@@ -112,10 +113,10 @@ def upload_records(request):
         if form.is_valid():
             records, errors = check_record_size(request.FILES['upload'])
 
-            records, errors, provinces = check_data_integrity(records, errors)
+            records, errors, districts = check_data_integrity(records, errors)
 
-            errors = check_duplicate_id_numbers(records, errors)
-
+            records, errors = check_duplicate_id_numbers(records, errors)
+            print(records)
             messages.success(request, 'File has been uploaded')
     else:
         form = FileForm()

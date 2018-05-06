@@ -3,10 +3,14 @@ from .models import Grower, District, Province
 
 def check_record_size(f):
     errors = []
-    contents = f.read().splitlines()
+    fdata = f.read()
+    if isinstance(fdata, bytes):
+        fdata = fdata.decode('utf-8')
+    contents = fdata.splitlines()
     cleaned_records = []
     count = 0
     for l in contents:
+        l = l.strip()
         count += 1
         fields = str(l).split(',')
         t = 0
@@ -25,15 +29,12 @@ def check_record_size(f):
             errors.append([count,
              'Line does not have the requisite number of fields'])
 
-    return (
-     cleaned_records, errors)
+    return cleaned_records, errors
 
 
 def check_data_integrity(records, errors):
     districts = get_districts()
     cleaned_records = []
-    for p in records:
-        print(p)
 
     for rec in records:
         is_clean = True
@@ -46,17 +47,18 @@ def check_data_integrity(records, errors):
             is_clean = False
             errors.append([rec[0],
              'The ID Number is invalid'])
-        z, rec[2] = check_mobile_number(rec[2])
+
+        z, rec[3] = check_mobile_number(rec[3])
         if not z:
             is_clean = False
             errors.append([rec[0],
              'Please check cellphone number'])
-        dkey = rec[3] + rec[4]
+
+        dkey = rec[4] + rec[5]
         if dkey not in list(districts.keys()):
             errors.append([rec[0],
          'Check Province, District name, and if district is in that Province'])
             is_clean = False
-
         if is_clean:
             cleaned_records.append(rec)
     return  cleaned_records, errors, districts
@@ -88,17 +90,16 @@ def check_id_number(n):
 
     else:
         is_clean = False
-    return (
-     is_clean, n)
+    print(is_clean)
+    return is_clean, n
 
 
 def get_districts():
     districts = District.objects.all()
     places = dict()
     for d in districts:
-        dkey = d.name + d.province.name
+        dkey = d.get_key()
         places[dkey] = d
-
     return places
 
 
@@ -125,9 +126,19 @@ def check_mobile_number(n):
             is_clean = False
     else:
         is_clean = False
-    return (
-     is_clean, n)
+    return is_clean, n
 
 
 def check_duplicate_id_numbers(records, errors):
-    return errors
+    cleaned_records = []
+    # errors = []
+    ids = {}
+    for rec in records:
+        print(ids)
+        if rec[2] in list(ids.keys()):
+            err = 'Duplicate ID Number in with line' + str(ids[rec[2]])
+            errors.append([rec[0], err])
+        else:
+            ids[rec[2]] = rec[0]
+            cleaned_records.append(rec)
+    return cleaned_records, errors
